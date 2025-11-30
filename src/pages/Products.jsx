@@ -15,6 +15,7 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState(urlSearchTerm || ""); // Initialize with URL param
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Update searchTerm if URL changes
   useEffect(() => {
@@ -46,6 +47,7 @@ const Products = () => {
   // 🧠 Fetch Products (filtered)
   useEffect(() => {
     setLoading(true);
+    setError(null);
     const fetchProducts = async () => {
       try {
         let url = "/products";
@@ -56,12 +58,13 @@ const Products = () => {
         setProducts(res.data);
       } catch (err) {
         console.error("Error loading products:", err);
+        setError(err.message + " | URL: " + axiosInstance.defaults.baseURL);
       } finally {
         setLoading(false);
       }
     };
     fetchProducts();
-  }, [activeCategory]);
+  }, [activeCategory, searchTerm]);
 
   // 📱 UX: Scroll to top when category changes
   useEffect(() => {
@@ -142,6 +145,14 @@ const Products = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </motion.div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <strong className="font-bold">Error: </strong>
+            <span className="block sm:inline">{error}</span>
+          </div>
+        )}
 
         {/* Loading / Product Grid */}
         {loading ? (

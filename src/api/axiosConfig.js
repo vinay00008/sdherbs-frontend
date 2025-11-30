@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api", // backend base URL
+  baseURL: "https://sdherbs-backend.onrender.com/api", // Hardcoded for immediate fix
   withCredentials: true, // include cookies
   headers: {
     // "Content-Type": "application/json", // Let browser set this for FormData

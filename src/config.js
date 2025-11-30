@@ -1,5 +1,5 @@
-export const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
-export const IMAGE_BASE_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || "http://localhost:5000";
+export const API_URL = process.env.REACT_APP_API_URL || "https://sdherbs-backend.onrender.com/api";
+export const IMAGE_BASE_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || "https://sdherbs-backend.onrender.com";
 
 const config = {
     API_URL,
