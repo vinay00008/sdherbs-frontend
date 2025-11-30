@@ -232,7 +232,7 @@ const GallerySection = ({ images }) => {
               className="snap-center shrink-0 w-72 h-56 sm:w-80 sm:h-64 rounded-xl overflow-hidden shadow-md bg-gray-100 dark:bg-gray-800 relative"
             >
               <img
-                src={img.image && img.image.startsWith('http') ? img.image : `http://localhost:5000${img.image}`}
+                src={img.image && img.image.startsWith('http') ? img.image : `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${img.image}`}
                 alt={img.caption || "Gallery Image"}
                 className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                 loading="lazy"

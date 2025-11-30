@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../api/axiosConfig";
 import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
@@ -27,7 +27,7 @@ const Products = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/categories");
+        const res = await axiosInstance.get("/categories");
         // Filter out categories with no products
         const validCategories = res.data.filter(cat => cat.productCount > 0);
         setCategories(validCategories);
@@ -48,11 +48,11 @@ const Products = () => {
     setLoading(true);
     const fetchProducts = async () => {
       try {
-        let url = "http://localhost:5000/api/products";
+        let url = "/products";
         if (activeCategory) {
           url += `?category=${activeCategory}`;
         }
-        const res = await axios.get(url);
+        const res = await axiosInstance.get(url);
         setProducts(res.data);
       } catch (err) {
         console.error("Error loading products:", err);

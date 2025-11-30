@@ -95,7 +95,7 @@ const GalleryManager = () => {
   };
 
   const copyToClipboard = (url) => {
-    const fullUrl = url.startsWith('http') ? url : `http://localhost:5000${url}`;
+    const fullUrl = url.startsWith('http') ? url : `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${url}`;
     navigator.clipboard.writeText(fullUrl);
     showToast("Link copied to clipboard!", "success");
   };
@@ -197,7 +197,7 @@ const GalleryManager = () => {
               >
                 <div className="h-48 overflow-hidden relative bg-gray-100 dark:bg-gray-800">
                   <img
-                    src={img.image && img.image.startsWith('http') ? img.image : `http://localhost:5000${img.image}`}
+                    src={img.image && img.image.startsWith('http') ? img.image : `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${img.image}`}
                     alt={img.caption || "Gallery Image"}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />

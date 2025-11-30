@@ -36,7 +36,7 @@ const About = () => {
     const getImageUrl = (path) => {
         if (!path) return "";
         if (path.startsWith("http")) return path;
-        return `http://localhost:5000${path}`;
+        return `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${path}`;
     };
 
     if (loading) {

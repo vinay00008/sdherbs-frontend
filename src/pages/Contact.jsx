@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Leaf } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import SEO from "../components/SEO";
+import axiosInstance from "../api/axiosConfig";
 
 const Contact = () => {
   const { theme } = useTheme();
@@ -26,10 +27,9 @@ const Contact = () => {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000/api"}/page-content/contact`);
-        const data = await res.json();
-        if (data && data.content) {
-          setContent((prev) => ({ ...prev, ...data.content }));
+        const res = await axiosInstance.get("/page-content/contact");
+        if (res.data && res.data.content) {
+          setContent((prev) => ({ ...prev, ...res.data.content }));
         }
       } catch (err) {
         console.error("Error fetching contact content:", err);
@@ -47,21 +47,14 @@ const Contact = () => {
     setLoading(true);
     setMsg("");
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000/api"}/enquiries`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
+      const res = await axiosInstance.post("/enquiries", formData);
 
-      if (res.ok) {
+      if (res.status === 200 || res.status === 201) {
         setSubmitted(true);
         setFormData({ name: "", email: "", phone: "", message: "" });
         setTimeout(() => setSubmitted(false), 5000);
       } else {
-        setMsg(data.error || "Failed to submit enquiry.");
+        setMsg(res.data.error || "Failed to submit enquiry.");
       }
     } catch (err) {
       console.error("Error submitting enquiry:", err);

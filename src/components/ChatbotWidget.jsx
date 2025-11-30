@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaLeaf, FaPaperPlane, FaMicrophone, FaVolumeUp } from "react-icons/fa";
 import { IoClose, IoTrashOutline } from "react-icons/io5";
 import pingSound from "../assets/ping.mp3";
-import axios from "axios";
+import axiosInstance from "../api/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 
@@ -31,26 +31,10 @@ const ChatbotWidget = () => {
 
     try {
       console.log("🗣️ Generating ElevenLabs Audio...");
-      const response = await axios.post(
-        `https://api.elevenlabs.io/v1/text-to-speech/${process.env.REACT_APP_ELEVENLABS_VOICE_ID}`, // Voice ID
-        {
-          text: text,
-          model_id: "eleven_multilingual_v2", // Best for Hindi + English
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
-            style: 0.0,
-            use_speaker_boost: true
-          }
-        },
-        {
-          headers: {
-            "xi-api-key": process.env.REACT_APP_ELEVENLABS_API_KEY, // API Key
-            "Content-Type": "application/json"
-          },
-          responseType: 'blob'
-        }
-      );
+      // Use the new backend proxy route for TTS
+      const response = await axiosInstance.post('/voice/speak', { text }, {
+        responseType: 'blob'
+      });
 
       const audioUrl = URL.createObjectURL(response.data);
       const audio = new Audio(audioUrl);
@@ -106,7 +90,7 @@ const ChatbotWidget = () => {
   // Offline smart response function
   const generateOfflineResponse = async (userText) => {
     try {
-      const res = await axios.get("http://localhost:5000/api/products");
+      const res = await axiosInstance.get("/products");
       const products = res.data || [];
 
       // Check if query matches any product
@@ -176,7 +160,7 @@ Or send your question via our Contact page — we’ll get back to you soon.`;
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/chatbot", {
+      const response = await axiosInstance.post("/chatbot", {
         message: textToSend,
       });
 
