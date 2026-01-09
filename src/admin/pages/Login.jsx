@@ -20,7 +20,8 @@ const Login = () => {
     try {
       const res = await axiosInstance.post("/admin/login", form);
       if (res.data) {
-        // cookie-based auth; server sets cookie
+        // Store token for header-based auth
+        localStorage.setItem("token", res.data.token);
         navigate("/admin/dashboard");
       } else {
         setError("Invalid response from server.");

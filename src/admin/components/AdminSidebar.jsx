@@ -33,7 +33,8 @@ const AdminSidebar = ({ onNavigate = () => { } }) => {
     } catch (err) {
       // ignore
     } finally {
-      // no token saved in localStorage (cookie auth). just redirect to login
+      // Clear token
+      localStorage.removeItem("token");
       window.location.href = "/admin/login";
     }
   };
