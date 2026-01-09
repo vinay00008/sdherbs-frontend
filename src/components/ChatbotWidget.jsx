@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaLeaf, FaPaperPlane, FaMicrophone, FaVolumeUp } from "react-icons/fa";
+import { FaLeaf, FaPaperPlane } from "react-icons/fa";
 import { IoClose, IoTrashOutline } from "react-icons/io5";
 import pingSound from "../assets/ping.mp3";
 import axiosInstance from "../api/axiosConfig";
@@ -16,41 +16,6 @@ const ChatbotWidget = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
 
-  // Voice Mode State
-  const [isVoiceMode, setIsVoiceMode] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-
-  // Text-to-Speech Function (ElevenLabs)
-  const speakResponse = async (text, force = false) => {
-    if (isMuted || (!isVoiceMode && !force)) return;
-
-    // Stop any current speech
-    window.speechSynthesis.cancel();
-    setIsSpeaking(true);
-
-    try {
-      console.log("🗣️ Generating ElevenLabs Audio...");
-      // Use the new backend proxy route for TTS
-      const response = await axiosInstance.post('/voice/speak', { text }, {
-        responseType: 'blob'
-      });
-
-      const audioUrl = URL.createObjectURL(response.data);
-      const audio = new Audio(audioUrl);
-      audio.onended = () => setIsSpeaking(false);
-      audio.play();
-
-    } catch (error) {
-      console.error("❌ ElevenLabs Error:", error);
-      // Fallback to Browser TTS
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "hi-IN";
-      utterance.onend = () => setIsSpeaking(false);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
   const playSound = () => {
     const audio = new Audio(pingSound);
     audio.volume = 0.5;
@@ -61,19 +26,6 @@ const ChatbotWidget = () => {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  // Load voices when they change (needed for some browsers)
-  useEffect(() => {
-    const loadVoices = () => {
-      const v = window.speechSynthesis.getVoices();
-      if (v.length > 0) {
-        console.log("🔊 Voices Loaded:", v.map(voice => voice.name));
-      }
-    };
-
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-    loadVoices(); // Initial load
-  }, []);
 
   // Auto Greeting on First Open
   useEffect(() => {
@@ -116,17 +68,10 @@ Or send your question via our Contact page — we’ll get back to you soon.`;
   };
 
   // Send message handler
-  const handleSend = async (msgText = null, fromVoice = false) => {
-    console.log("handleSend called with:", msgText, "Type:", typeof msgText);
+  const handleSend = async (msgText = null) => {
     const textToSend = typeof msgText === "string" ? msgText : input;
 
-    // If sent via typing (Enter key or Send button), disable voice mode
-    if (!fromVoice) {
-      setIsVoiceMode(false);
-    }
-
     if (!textToSend || !textToSend.trim()) {
-      console.log("Empty message, not sending.");
       return;
     }
 
@@ -138,26 +83,6 @@ Or send your question via our Contact page — we’ll get back to you soon.`;
     setMessages((prev) => [...prev, newMessage]);
     setInput("");
     setIsTyping(true);
-
-    // 0. Check for Special Debug Command "/voices"
-    if (textToSend.toLowerCase() === "/voices") {
-      const voices = window.speechSynthesis.getVoices();
-      const voiceList = voices
-        .filter(v => v.lang.includes("IN") || v.lang.includes("hi") || v.name.includes("Female"))
-        .map(v => `• ${v.name} (${v.lang})`)
-        .join("\n");
-
-      const debugMsg = {
-        sender: "bot",
-        text: `🎤 **Available Voices on your System:**\n\n${voiceList || "No specific Indian/Female voices found."}\n\n(Tell the developer which one you like!)`,
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      };
-
-      setMessages((prev) => [...prev, newMessage, debugMsg]);
-      setInput("");
-      setIsTyping(false);
-      return;
-    }
 
     try {
       const response = await axiosInstance.post("/chatbot", {
@@ -204,15 +129,6 @@ Or send your question via our Contact page — we’ll get back to you soon.`;
       setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
 
-      // Speak if in voice mode
-      if (fromVoice || isVoiceMode) {
-        // Strip markdown and emojis for cleaner speech
-        const cleanText = botReply
-          .replace(/[*_#`]/g, "") // Remove markdown
-          .replace(/\p{Extended_Pictographic}/gu, ""); // Remove emojis
-        speakResponse(cleanText, true); // Force speak
-      }
-
     } catch (error) {
       const offlineReply = await generateOfflineResponse(textToSend);
       const botMessage = {
@@ -224,70 +140,6 @@ Or send your question via our Contact page — we’ll get back to you soon.`;
       playSound();
       setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
-
-      if (fromVoice || isVoiceMode) {
-        // Strip markdown and emojis for cleaner speech
-        const cleanText = offlineReply
-          .replace(/[*_#`]/g, "") // Remove markdown
-          .replace(/\p{Extended_Pictographic}/gu, ""); // Remove emojis
-        speakResponse(cleanText, true); // Force speak
-      }
-    }
-  };
-
-  // Voice Input Handler
-  const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef(null);
-
-  const startListening = () => {
-    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-      alert("Voice input is not supported in this browser. Please try Chrome or Edge.");
-      return;
-    }
-
-    // Unlock Audio Context immediately (Fix for first-time play issue)
-    const audio = new Audio(pingSound);
-    audio.volume = 0; // Silent
-    audio.play().catch(() => { });
-
-    setIsVoiceMode(true); // Enable voice mode
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognitionRef.current = recognition;
-
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = "en-US";
-
-    recognition.onstart = () => {
-      setIsListening(true);
-    };
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      console.log("Voice Result:", transcript);
-      setInput(transcript);
-      setIsListening(false);
-      handleSend(transcript, true); // Pass true for fromVoice
-    };
-
-    recognition.onerror = (event) => {
-      console.error("Speech recognition error", event.error);
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognition.start();
-  };
-
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsListening(false);
     }
   };
 
@@ -342,15 +194,6 @@ Or send your question via our Contact page — we’ll get back to you soon.`;
                 <h2 className="font-semibold">SD Herbs Assistant</h2>
               </div>
               <div className="flex items-center gap-3">
-                {/* Mute Toggle */}
-                <button
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="text-white/80 hover:text-white"
-                  title={isMuted ? "Unmute Voice" : "Mute Voice"}
-                >
-                  {isMuted ? "🔇" : "🔊"}
-                </button>
-
                 <IoTrashOutline
                   className="cursor-pointer text-lg hover:text-red-300"
                   title="Clear Chat"
@@ -421,27 +264,6 @@ Or send your question via our Contact page — we’ll get back to you soon.`;
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
               />
-
-              {/* Mic Button */}
-              <button
-                onClick={isListening ? stopListening : startListening}
-                disabled={isSpeaking}
-                className={`ml-2 p-2 rounded-full transition-colors ${isListening
-                  ? "bg-red-500 text-white animate-pulse"
-                  : isSpeaking
-                    ? "bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 cursor-not-allowed"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  }`}
-                title={isSpeaking ? "Assistant is speaking..." : "Voice Input"}
-              >
-                {isListening ? (
-                  <div className="w-4 h-4 bg-white rounded-full" />
-                ) : isSpeaking ? (
-                  <FaVolumeUp size={16} className="animate-pulse" />
-                ) : (
-                  <FaMicrophone size={16} />
-                )}
-              </button>
 
               <motion.button
                 whileTap={{ scale: 0.9 }}

@@ -4,7 +4,7 @@ module.exports = function (app) {
     app.use(
         '/api',
         createProxyMiddleware({
-            target: 'https://sdherbs-backend.onrender.com',
+            target: 'http://localhost:10000',
             changeOrigin: true,
         })
     );

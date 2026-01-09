@@ -12,7 +12,7 @@ const ChatbotTrainer = () => {
 
     // UX State
     const [toast, setToast] = useState({ show: false, message: "", type: "success" });
-    const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
+    const [deleteModal, setDeleteModal] = useState({ show: false, id: null, type: null }); // type: 'knowledge' | 'log' | 'all-logs'
 
     useEffect(() => {
         fetchData();
@@ -60,19 +60,35 @@ const ChatbotTrainer = () => {
     };
 
     const handleDeleteKnowledge = (id) => {
-        setDeleteModal({ show: true, id });
+        setDeleteModal({ show: true, id, type: 'knowledge' });
+    };
+
+    const handleDeleteLog = (id) => {
+        setDeleteModal({ show: true, id, type: 'log' });
+    };
+
+    const handleClearAllLogs = () => {
+        setDeleteModal({ show: true, id: null, type: 'all-logs' });
     };
 
     const confirmDelete = async () => {
-        if (!deleteModal.id) return;
         try {
-            await axios.delete(`/chat-trainer/knowledge/${deleteModal.id}`);
+            if (deleteModal.type === 'knowledge' && deleteModal.id) {
+                await axios.delete(`/chat-trainer/knowledge/${deleteModal.id}`);
+                showToast("Knowledge deleted successfully!", "success");
+            } else if (deleteModal.type === 'log' && deleteModal.id) {
+                await axios.delete(`/chat-trainer/logs/${deleteModal.id}`);
+                showToast("Log entry deleted.", "success");
+            } else if (deleteModal.type === 'all-logs') {
+                await axios.delete(`/chat-trainer/logs`);
+                showToast("All chat history cleared!", "success");
+            }
+
             fetchData();
-            showToast("Knowledge deleted successfully!", "success");
-            setDeleteModal({ show: false, id: null });
+            setDeleteModal({ show: false, id: null, type: null });
         } catch (error) {
-            console.error("Error deleting knowledge:", error);
-            showToast("Failed to delete knowledge.", "error");
+            console.error("Error deleting:", error);
+            showToast("Failed to delete.", "error");
         }
     };
 
@@ -109,13 +125,15 @@ const ChatbotTrainer = () => {
                             <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Trash2 size={32} className="text-red-600 dark:text-red-500" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Delete Knowledge?</h3>
+                            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                                {deleteModal.type === 'all-logs' ? 'Clear All History?' : 'Delete Item?'}
+                            </h3>
                             <p className="text-gray-500 dark:text-gray-400 mb-6">
-                                Are you sure you want to delete this item? This action cannot be undone.
+                                Are you sure you want to delete this? This action cannot be undone.
                             </p>
                             <div className="flex gap-3">
                                 <button
-                                    onClick={() => setDeleteModal({ show: false, id: null })}
+                                    onClick={() => setDeleteModal({ show: false, id: null, type: null })}
                                     className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Cancel
@@ -210,17 +228,35 @@ const ChatbotTrainer = () => {
                 {/* Right Column: Chat Logs */}
                 <div>
                     <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm h-full border border-gray-200 dark:border-gray-700">
-                        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800 dark:text-white">
-                            <History className="text-purple-500" /> Recent Chat Logs
-                        </h2>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-semibold flex items-center gap-2 text-gray-800 dark:text-white">
+                                <History className="text-purple-500" /> Recent Chat Logs
+                            </h2>
+                            {logs.length > 0 && (
+                                <button
+                                    onClick={handleClearAllLogs}
+                                    className="text-xs flex items-center gap-1 text-red-500 hover:text-red-700 border border-red-200 hover:bg-red-50 px-2 py-1 rounded-md transition"
+                                >
+                                    <Trash2 size={12} /> Clear History
+                                </button>
+                            )}
+                        </div>
+
                         <div className="space-y-4 max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
                             {logs.map((log) => (
-                                <div key={log._id} className="border-b dark:border-gray-700 pb-3 last:border-0">
-                                    <div className="flex justify-between text-xs text-gray-400 mb-1">
+                                <div key={log._id} className="border-b dark:border-gray-700 pb-3 last:border-0 relative group">
+                                    <button
+                                        onClick={() => handleDeleteLog(log._id)}
+                                        className="absolute top-0 right-0 p-1 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
+                                        title="Delete Log"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                    <div className="flex justify-between text-xs text-gray-400 mb-1 pr-6">
                                         <span>{new Date(log.timestamp).toLocaleString()}</span>
                                         {log.isUnanswered && <span className="text-red-500 font-bold">Unanswered?</span>}
                                     </div>
-                                    <p className="text-gray-800 dark:text-gray-200 font-medium">User: {log.userMessage}</p>
+                                    <p className="text-gray-800 dark:text-gray-200 font-medium pr-6">User: {log.userMessage}</p>
                                     <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">Bot: {log.botReply}</p>
                                     {/* Quick Add Button */}
                                     <button

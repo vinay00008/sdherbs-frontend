@@ -64,8 +64,17 @@ const HomePageManager = () => {
             // Simulate a small delay for the animation to be visible and feel premium
             await new Promise(resolve => setTimeout(resolve, 800));
 
-            setForm(prev => ({ ...prev, heroImage: res.data.filePath }));
-            showToast("Image uploaded successfully!", "success");
+            const newImageUrl = res.data.filePath;
+            setForm(prev => ({ ...prev, heroImage: newImageUrl }));
+
+            // AUTO SAVE after upload
+            await axios.put("/page-content/home", {
+                title: form.title,
+                description: form.subtitle,
+                content: { heroImage: newImageUrl }
+            });
+
+            showToast("Image uploaded & SAVED successfully! ✅", "success");
         } catch (err) {
             console.error("Upload error:", err);
             showToast("Failed to upload image.", "error");
@@ -118,7 +127,7 @@ const HomePageManager = () => {
                                 </div>
                             </div>
                             <div className="text-center">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Uploading Image...</h3>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Uploading & Saving...</h3>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm">Optimizing and saving your visual asset.</p>
                             </div>
                         </motion.div>

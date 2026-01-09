@@ -9,7 +9,6 @@ import ConfirmModal from "../../components/ConfirmModal";
 const EditActivity = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false); // New state for upload modal

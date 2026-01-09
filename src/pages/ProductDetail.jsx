@@ -51,7 +51,7 @@ const ProductDetail = () => {
                 <SEO
                     title={product.name}
                     description={product.description}
-                    image={product.images?.[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${product.images[0]}`) : ""}
+                    image={product.images?.[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:10000'}${product.images[0]}`) : ""}
                 />
             )}
             <div className="max-w-6xl mx-auto">
@@ -70,7 +70,7 @@ const ProductDetail = () => {
                         className="bg-gray-100 dark:bg-[#1e293b] rounded-3xl overflow-hidden shadow-lg"
                     >
                         <img
-                            src={product.images?.[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${product.images[0]}`) : "https://via.placeholder.com/600"}
+                            src={product.images?.[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:10000'}${product.images[0]}`) : "https://via.placeholder.com/600"}
                             alt={product.name}
                             className="w-full h-full object-cover min-h-[400px]"
                         />

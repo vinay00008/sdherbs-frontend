@@ -132,7 +132,7 @@ const AboutManager = () => {
     const getImageUrl = (path) => {
         if (!path) return "";
         if (path.startsWith("http")) return path;
-        return `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${path}`;
+        return `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:10000'}${path}`;
     };
 
     if (loading) return <div className="p-10 text-center"><Loader2 className="animate-spin mx-auto" /></div>;

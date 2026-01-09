@@ -286,7 +286,7 @@ const ProductManager = () => {
                             <div className="h-48 bg-gray-200 dark:bg-gray-700 relative">
                                 {product.images && product.images.length > 0 ? (
                                     <img
-                                        src={product.images[0].startsWith('http') ? product.images[0] : `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${product.images[0]}`}
+                                        src={product.images[0].startsWith('http') ? product.images[0] : `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:10000'}${product.images[0]}`}
                                         alt={product.name}
                                         className="w-full h-full object-cover"
                                     />
