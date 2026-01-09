@@ -1,8 +1,8 @@
-// client/src/api/axiosConfig.js
 import axios from "axios";
+import { API_URL } from "../config";
 
 const axiosInstance = axios.create({
-  baseURL: (process.env.REACT_APP_API_URL || "http://localhost:10000/api").replace(/\/$/, ''), // Use ENV var in production
+  baseURL: API_URL?.replace(/\/$/, ''), // Use central config
   withCredentials: true, // include cookies
   headers: {
     // "Content-Type": "application/json", // Let browser set this for FormData
