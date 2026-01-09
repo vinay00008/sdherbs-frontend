@@ -13,9 +13,9 @@ const Products = () => {
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        console.log("Fetching products from:", axiosInstance.defaults.baseURL + "/products");
+        // console.log("Fetching products from:", axiosInstance.defaults.baseURL + "/products");
         const res = await axiosInstance.get("/products");
-        console.log("Products fetched:", res.data);
+        console.log("Products API response:", res.data);
         setProducts(res.data);
       } catch (err) {
         console.error("API error:", err);
