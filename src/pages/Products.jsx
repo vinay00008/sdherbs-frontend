@@ -50,11 +50,9 @@ const Products = () => {
     setError(null);
     const fetchProducts = async () => {
       try {
-        let url = "/products";
-        if (activeCategory) {
-          url += `?category=${activeCategory}`;
-        }
-        const res = await axiosInstance.get(url);
+        const res = await axiosInstance.get("/products", {
+          params: { category: activeCategory }
+        });
         setProducts(res.data);
       } catch (err) {
         console.error("Error loading products:", err);
