@@ -15,7 +15,7 @@ const Products = () => {
       try {
         // console.log("Fetching products from:", axiosInstance.defaults.baseURL + "/products");
         const res = await axiosInstance.get("/products");
-        console.log("Products API response:", res.data);
+        // console.log("Products API response:", res.data);
         setProducts(res.data);
       } catch (err) {
         console.error("API error:", err);
@@ -29,11 +29,11 @@ const Products = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
-      <SEO title="Our Products (Debug Mode)" />
+      <SEO title="Our Products" />
 
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-center dark:text-white">
-          Our Products (Debug Mode)
+          Our Products
         </h1>
 
         {/* Loading State */}
