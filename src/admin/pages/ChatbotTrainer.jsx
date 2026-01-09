@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Plus, Trash2, History, Lightbulb, CheckCircle, AlertCircle, X } from "lucide-react";
 
@@ -26,8 +26,8 @@ const ChatbotTrainer = () => {
     const fetchData = async () => {
         try {
             const [logsRes, knowledgeRes] = await Promise.all([
-                axios.get("/chat-trainer/logs"),
-                axios.get("/chat-trainer/knowledge"),
+                axiosInstance.get("/chat-trainer/logs"),
+                axiosInstance.get("/chat-trainer/knowledge"),
             ]);
             setLogs(Array.isArray(logsRes.data) ? logsRes.data : []);
             setKnowledge(Array.isArray(knowledgeRes.data) ? knowledgeRes.data : []);
@@ -44,7 +44,7 @@ const ChatbotTrainer = () => {
 
         setLoading(true);
         try {
-            await axios.post("/chat-trainer/knowledge", {
+            await axiosInstance.post("/chat-trainer/knowledge", {
                 question: newQuestion,
                 answer: newAnswer,
             });
@@ -74,13 +74,13 @@ const ChatbotTrainer = () => {
     const confirmDelete = async () => {
         try {
             if (deleteModal.type === 'knowledge' && deleteModal.id) {
-                await axios.delete(`/chat-trainer/knowledge/${deleteModal.id}`);
+                await axiosInstance.delete(`/chat-trainer/knowledge/${deleteModal.id}`);
                 showToast("Knowledge deleted successfully!", "success");
             } else if (deleteModal.type === 'log' && deleteModal.id) {
-                await axios.delete(`/chat-trainer/logs/${deleteModal.id}`);
+                await axiosInstance.delete(`/chat-trainer/logs/${deleteModal.id}`);
                 showToast("Log entry deleted.", "success");
             } else if (deleteModal.type === 'all-logs') {
-                await axios.delete(`/chat-trainer/logs`);
+                await axiosInstance.delete(`/chat-trainer/logs`);
                 showToast("All chat history cleared!", "success");
             }
 
@@ -280,3 +280,4 @@ const ChatbotTrainer = () => {
 };
 
 export default ChatbotTrainer;
+

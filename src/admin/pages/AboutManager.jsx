@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 import { motion, AnimatePresence } from "framer-motion";
 import { Save, Plus, Trash2, Upload, Loader2, Image as ImageIcon, X, CheckCircle, AlertCircle } from "lucide-react";
 
@@ -33,7 +33,7 @@ const AboutManager = () => {
 
     const fetchContent = async () => {
         try {
-            const res = await axios.get("/page-content/about");
+            const res = await axiosInstance.get("/page-content/about");
             if (res.data && res.data.content) {
                 setContent((prev) => ({ ...prev, ...res.data.content }));
             }
@@ -48,7 +48,7 @@ const AboutManager = () => {
     const handleSave = async () => {
         setSaving(true);
         try {
-            await axios.put("/page-content/about", {
+            await axiosInstance.put("/page-content/about", {
                 title: "About Us",
                 content: content
             });
@@ -76,7 +76,7 @@ const AboutManager = () => {
         formData.append("image", file);
 
         try {
-            const res = await axios.post("/upload", formData, {
+            const res = await axiosInstance.post("/upload", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
@@ -484,3 +484,4 @@ const AboutManager = () => {
 };
 
 export default AboutManager;
+

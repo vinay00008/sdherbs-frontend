@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit, Trash2, X, Save, Image as ImageIcon, Search, FolderPlus, Settings, Loader2, CheckCircle, Upload, AlertCircle } from "lucide-react";
 import ConfirmationModal from "../../components/ConfirmationModal";
@@ -51,7 +51,7 @@ const ProductManager = () => {
 
     const fetchProducts = async () => {
         try {
-            const res = await axios.get("/products");
+            const res = await axiosInstance.get("/products");
             setProducts(res.data);
         } catch (err) {
             console.error("Error fetching products:", err);
@@ -63,7 +63,7 @@ const ProductManager = () => {
 
     const fetchCategories = async () => {
         try {
-            const res = await axios.get("/categories");
+            const res = await axiosInstance.get("/categories");
             setCategories(res.data);
         } catch (err) {
             console.error("Error fetching categories:", err);
@@ -90,7 +90,7 @@ const ProductManager = () => {
         e.preventDefault();
         if (!newCategoryName.trim()) return;
         try {
-            const res = await axios.post("/categories", { name: newCategoryName });
+            const res = await axiosInstance.post("/categories", { name: newCategoryName });
             setCategories([...categories, res.data]);
             setFormData(prev => ({ ...prev, category: res.data._id }));
             setNewCategoryName("");
@@ -108,7 +108,7 @@ const ProductManager = () => {
             message: "WARNING: This will delete the category AND ALL PRODUCTS inside it. This action cannot be undone.",
             onConfirm: async () => {
                 try {
-                    await axios.delete(`/categories/${id}`);
+                    await axiosInstance.delete(`/categories/${id}`);
                     setCategories(categories.filter(c => c._id !== id));
                     fetchProducts(); // Refresh products as some might be deleted
                     showToast("Category deleted successfully!", "success");
@@ -147,10 +147,10 @@ const ProductManager = () => {
 
         try {
             if (editingProduct) {
-                await axios.put(`/products/${editingProduct._id}`, data);
+                await axiosInstance.put(`/products/${editingProduct._id}`, data);
                 showToast("Product updated successfully!", "success");
             } else {
-                await axios.post("/products", data);
+                await axiosInstance.post("/products", data);
                 showToast("Product added successfully!", "success");
             }
             fetchProducts();
@@ -171,7 +171,7 @@ const ProductManager = () => {
             message: "Are you sure you want to delete this product? The image will also be deleted.",
             onConfirm: async () => {
                 try {
-                    await axios.delete(`/products/${id}`);
+                    await axiosInstance.delete(`/products/${id}`);
                     setProducts(products.filter((p) => p._id !== id));
                     showToast("Product deleted successfully!", "success");
                 } catch (err) {
@@ -529,3 +529,4 @@ const ProductManager = () => {
 };
 
 export default ProductManager;
+

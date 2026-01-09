@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Shield, UserPlus, Mail, Lock, Trash2, Loader2, Users, Power, ArrowLeft, Image, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 import { useSettings } from "../../context/SettingsContext";
 
 const Settings = () => {
@@ -21,7 +21,7 @@ const Settings = () => {
     e.preventDefault();
     setLoading(true); setSuccessMsg(""); setErrorMsg("");
     try {
-      const res = await axios.post("/admin/register", adminForm);
+      const res = await axiosInstance.post("/admin/register", adminForm);
       if (res.data?.email || res.data?.name) {
         setSuccessMsg(`Admin "${res.data.name || res.data.email}" added successfully!`);
         setAdminForm({ name: "", email: "", password: "" });
@@ -38,7 +38,7 @@ const Settings = () => {
 
   const fetchAdmins = async () => {
     try {
-      const res = await axios.get("/admin/list");
+      const res = await axiosInstance.get("/admin/list");
       setAdmins(res.data || []);
     } catch (err) {
       console.error("Error fetching admins:", err);
@@ -51,7 +51,7 @@ const Settings = () => {
 
   const handleToggle = async (id) => {
     try {
-      const res = await axios.patch(`/admin/${id}/toggle`);
+      const res = await axiosInstance.patch(`/admin/${id}/toggle`);
       setAdmins((prev) => prev.map((a) => (a._id === id ? { ...a, isActive: res.data.isActive } : a)));
     } catch (err) {
       console.error("Toggle error:", err);
@@ -62,7 +62,7 @@ const Settings = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this admin?")) return;
     try {
-      await axios.delete(`/admin/${id}`);
+      await axiosInstance.delete(`/admin/${id}`);
       setAdmins((prev) => prev.filter((a) => a._id !== id));
     } catch (err) {
       alert("Failed to delete admin.");
@@ -148,7 +148,7 @@ const ContactSettings = () => {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await axios.get("/page-content/contact");
+        const res = await axiosInstance.get("/page-content/contact");
         if (res.data && res.data.content) {
           setForm((prev) => ({ ...prev, ...res.data.content }));
         }
@@ -168,7 +168,7 @@ const ContactSettings = () => {
     setLoading(true);
     setMsg("");
     try {
-      await axios.put("/page-content/contact", {
+      await axiosInstance.put("/page-content/contact", {
         content: form,
       });
       setMsg("Contact details updated successfully!");
@@ -271,7 +271,7 @@ const LogoSettings = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await axios.get("/settings");
+        const res = await axiosInstance.get("/settings");
         if (res.data && res.data.logo) {
           setLogo(res.data.logo);
         }
@@ -299,13 +299,13 @@ const LogoSettings = () => {
 
     try {
       // 1. Upload Image
-      const uploadRes = await axios.post("/upload", formData, {
+      const uploadRes = await axiosInstance.post("/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       const logoUrl = uploadRes.data.filePath;
 
       // 2. Update Settings
-      await axios.put("/settings", { logo: logoUrl });
+      await axiosInstance.put("/settings", { logo: logoUrl });
 
       setLogo(logoUrl);
       setMsg("Logo updated successfully!");
@@ -357,3 +357,4 @@ const LogoSettings = () => {
 };
 
 export default Settings;
+

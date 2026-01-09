@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 import { motion, AnimatePresence } from "framer-motion";
 import { Pencil, Trash2, Plus, Newspaper, X } from "lucide-react";
 
@@ -15,7 +15,7 @@ const NewsManager = () => {
 
   const fetchNews = async () => {
     try {
-      const res = await axios.get("/news");
+      const res = await axiosInstance.get("/news");
       setNews(res.data);
     } catch (err) {
       console.error("Error fetching news:", err);
@@ -31,7 +31,7 @@ const NewsManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/news", formData);
+      await axiosInstance.post("/news", formData);
       fetchNews();
       closeModal();
     } catch (err) {
@@ -43,7 +43,7 @@ const NewsManager = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this news item?")) return;
     try {
-      await axios.delete(`/news/${id}`);
+      await axiosInstance.delete(`/news/${id}`);
       setNews(news.filter((item) => item._id !== id));
     } catch (err) {
       console.error("Error deleting news:", err);
@@ -206,3 +206,4 @@ const NewsManager = () => {
 };
 
 export default NewsManager;
+

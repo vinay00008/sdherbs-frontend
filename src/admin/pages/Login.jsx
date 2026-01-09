@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Lock, Mail } from "lucide-react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 
@@ -18,7 +18,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true); setError("");
     try {
-      const res = await axios.post("/admin/login", form);
+      const res = await axiosInstance.post("/admin/login", form);
       if (res.data) {
         // cookie-based auth; server sets cookie
         navigate("/admin/dashboard");
@@ -70,3 +70,4 @@ const Login = () => {
 };
 
 export default Login;
+

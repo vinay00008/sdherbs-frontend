@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Leaf, Award, Users, Heart, Globe, ShieldCheck, Loader2 } from "lucide-react";
-import axios from "../api/axiosConfig";
+import axiosInstance from "../api/axiosConfig";
 import SEO from "../components/SEO";
 
 const iconMap = {
@@ -20,7 +20,7 @@ const About = () => {
     useEffect(() => {
         const fetchContent = async () => {
             try {
-                const res = await axios.get("/page-content/about");
+                const res = await axiosInstance.get("/page-content/about");
                 if (res.data && res.data.content) {
                     setContent(res.data.content);
                 }
@@ -256,3 +256,4 @@ const About = () => {
 };
 
 export default About;
+

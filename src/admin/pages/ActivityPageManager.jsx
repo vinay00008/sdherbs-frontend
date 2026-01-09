@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Layout, FileText, Calendar, Image as ImageIcon, Shield, BookOpen } from "lucide-react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 import EventsManager from "./EventsManager";
 import ActivitiesManager from "./ActivitiesManager";
 
@@ -91,7 +91,7 @@ const PageContentSettings = () => {
     useEffect(() => {
         const fetchContent = async () => {
             try {
-                const res = await axios.get("/page-content/activity");
+                const res = await axiosInstance.get("/page-content/activity");
                 if (res.data) {
                     setForm({ title: res.data.title || "", description: res.data.description || "" });
                 }
@@ -106,7 +106,7 @@ const PageContentSettings = () => {
         e.preventDefault();
         setLoading(true); setMsg("");
         try {
-            await axios.put("/page-content/activity", form);
+            await axiosInstance.put("/page-content/activity", form);
             setMsg("✅ Activity Page content updated!");
             setTimeout(() => setMsg(""), 3000);
         } catch (err) {
@@ -162,3 +162,4 @@ const PageContentSettings = () => {
 };
 
 export default ActivityPageManager;
+

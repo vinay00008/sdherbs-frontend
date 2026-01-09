@@ -12,7 +12,7 @@ import {
   Home,
   Layout
 } from "lucide-react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 
 const AdminSidebar = ({ onNavigate = () => { } }) => {
   const links = [
@@ -29,7 +29,7 @@ const AdminSidebar = ({ onNavigate = () => { } }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/admin/logout");
+      await axiosInstance.post("/admin/logout");
     } catch (err) {
       // ignore
     } finally {
@@ -84,3 +84,4 @@ const AdminSidebar = ({ onNavigate = () => { } }) => {
 };
 
 export default AdminSidebar;
+

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
-import axios from "../api/axiosConfig";
+import axiosInstance from "../api/axiosConfig";
 import { motion } from "framer-motion";
 import { ArrowLeft, ShoppingBag, Check, Truck, ShieldCheck } from "lucide-react";
 import EnquiryModal from "../components/EnquiryModal";
@@ -22,7 +22,7 @@ const ProductDetail = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const allRes = await axios.get("/products");
+                const allRes = await axiosInstance.get("/products");
                 const found = allRes.data.find((p) => p._id === id);
                 setProduct(found);
 

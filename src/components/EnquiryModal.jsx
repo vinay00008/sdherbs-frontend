@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, CheckCircle } from "lucide-react";
-import axios from "../api/axiosConfig";
+import axiosInstance from "../api/axiosConfig";
 
 const EnquiryModal = ({ isOpen, onClose, product }) => {
     const [formData, setFormData] = useState({
@@ -21,7 +21,7 @@ const EnquiryModal = ({ isOpen, onClose, product }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post("/enquiries", {
+            await axiosInstance.post("/enquiries", {
                 ...formData,
                 productId: product?._id,
             });
@@ -168,3 +168,4 @@ const EnquiryModal = ({ isOpen, onClose, product }) => {
 };
 
 export default EnquiryModal;
+

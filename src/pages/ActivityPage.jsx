@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "../api/axiosConfig";
+import axiosInstance from "../api/axiosConfig";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Image as ImageIcon } from "lucide-react";
 
@@ -14,10 +14,10 @@ const ActivityPage = () => {
     const fetchData = async () => {
       try {
         const [eventsRes, galleryRes, contentRes, blogsRes] = await Promise.all([
-          axios.get("/events"),
-          axios.get("/gallery"),
-          axios.get("/page-content/activity"),
-          axios.get("/activities")
+          axiosInstance.get("/events"),
+          axiosInstance.get("/gallery"),
+          axiosInstance.get("/page-content/activity"),
+          axiosInstance.get("/activities")
         ]);
 
         setEvents(eventsRes.data);

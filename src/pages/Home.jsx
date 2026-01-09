@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Leaf, ShieldCheck, Truck, Star, Users, Globe, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import axios from "../api/axiosConfig";
+import axiosInstance from "../api/axiosConfig";
 import { IMAGE_BASE_URL } from "../config";
 
 import SEO from "../components/SEO";
@@ -22,9 +22,9 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const [productsRes, activitiesRes, contentRes] = await Promise.all([
-          axios.get("/products"),
-          axios.get("/activities"),
-          axios.get("/page-content/home")
+          axiosInstance.get("/products"),
+          axiosInstance.get("/activities"),
+          axiosInstance.get("/page-content/home")
         ]);
         setFeaturedProducts(productsRes.data.slice(0, 3));
         setLatestNews(activitiesRes.data.slice(0, 3)); // Use activities (blogs) as news

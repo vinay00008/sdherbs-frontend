@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, Trash2, Copy, X, CheckCircle } from "lucide-react";
 import ConfirmationModal from "../../components/ConfirmationModal";
@@ -25,7 +25,7 @@ const EnquiryManager = () => {
 
     const fetchEnquiries = async () => {
         try {
-            const res = await axios.get("/enquiries");
+            const res = await axiosInstance.get("/enquiries");
             setEnquiries(res.data);
         } catch (err) {
             console.error("Error fetching enquiries:", err);
@@ -41,7 +41,7 @@ const EnquiryManager = () => {
             message: "Are you sure you want to delete this enquiry? This action cannot be undone.",
             onConfirm: async () => {
                 try {
-                    await axios.delete(`/enquiries/${id}`);
+                    await axiosInstance.delete(`/enquiries/${id}`);
                     setEnquiries(enquiries.filter((e) => e._id !== id));
                 } catch (err) {
                     console.error("Error deleting enquiry:", err);
@@ -241,3 +241,4 @@ ${selectedEnquiry.message}
 };
 
 export default EnquiryManager;
+

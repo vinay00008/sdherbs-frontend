@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, MapPin, Plus, Pencil, Trash2, X } from "lucide-react";
 
@@ -16,7 +16,7 @@ const EventsManager = () => {
 
   const fetchEvents = async () => {
     try {
-      const res = await axios.get("/events");
+      const res = await axiosInstance.get("/events");
       setEvents(res.data);
     } catch (err) {
       console.error("Error fetching events:", err);
@@ -34,10 +34,10 @@ const EventsManager = () => {
     try {
       if (editingId) {
         // Update existing event
-        await axios.put(`/events/${editingId}`, formData);
+        await axiosInstance.put(`/events/${editingId}`, formData);
       } else {
         // Create new event
-        await axios.post("/events", formData);
+        await axiosInstance.post("/events", formData);
       }
       fetchEvents();
       closeModal();
@@ -68,7 +68,7 @@ const EventsManager = () => {
   const executeDelete = async () => {
     if (!deleteId) return;
     try {
-      await axios.delete(`/events/${deleteId}`);
+      await axiosInstance.delete(`/events/${deleteId}`);
       setEvents(events.filter((e) => e._id !== deleteId));
       setDeleteId(null);
     } catch (err) {
@@ -317,3 +317,4 @@ const EventsManager = () => {
 };
 
 export default EventsManager;
+

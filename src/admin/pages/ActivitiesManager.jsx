@@ -13,7 +13,7 @@ import {
   Upload
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 
 const ActivitiesManager = () => {
   const [activities, setActivities] = useState([]);
@@ -41,7 +41,7 @@ const ActivitiesManager = () => {
   const fetchActivities = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/activities");
+      const res = await axiosInstance.get("/activities");
       setActivities(res.data || []);
     } catch (err) {
       console.error("Fetch activities error:", err);
@@ -86,7 +86,7 @@ const ActivitiesManager = () => {
 
       form.files.forEach((f) => fd.append("images", f));
 
-      await axios.post("/activities", fd, {
+      await axiosInstance.post("/activities", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -120,7 +120,7 @@ const ActivitiesManager = () => {
     if (!deleteId) return;
 
     try {
-      await axios.delete(`/activities/${deleteId}`);
+      await axiosInstance.delete(`/activities/${deleteId}`);
       setActivities((prev) => prev.filter((a) => a._id !== deleteId));
       setDeleteId(null);
       showToast("Activity deleted successfully!", "success");
@@ -406,3 +406,4 @@ const ActivitiesManager = () => {
 };
 
 export default ActivitiesManager;
+

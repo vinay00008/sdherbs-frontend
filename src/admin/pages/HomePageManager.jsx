@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Home, Save, Upload, Image as ImageIcon, Loader2, CheckCircle, AlertCircle } from "lucide-react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 
 const HomePageManager = () => {
     const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ const HomePageManager = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get("/page-content/home");
+                const res = await axiosInstance.get("/page-content/home");
                 if (res.data) {
                     setForm({
                         title: res.data.title || "Unlock Nature's Healing Power",
@@ -58,7 +58,7 @@ const HomePageManager = () => {
 
         try {
             setUploading(true); // Start uploading animation
-            const res = await axios.post("/upload", formData, {
+            const res = await axiosInstance.post("/upload", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             // Simulate a small delay for the animation to be visible and feel premium
@@ -68,7 +68,7 @@ const HomePageManager = () => {
             setForm(prev => ({ ...prev, heroImage: newImageUrl }));
 
             // AUTO SAVE after upload
-            await axios.put("/page-content/home", {
+            await axiosInstance.put("/page-content/home", {
                 title: form.title,
                 description: form.subtitle,
                 content: { heroImage: newImageUrl }
@@ -88,7 +88,7 @@ const HomePageManager = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            await axios.put("/page-content/home", {
+            await axiosInstance.put("/page-content/home", {
                 title: form.title,
                 description: form.subtitle,
                 content: { heroImage: form.heroImage }
@@ -261,3 +261,4 @@ const HomePageManager = () => {
 };
 
 export default HomePageManager;
+

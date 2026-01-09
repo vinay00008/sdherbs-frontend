@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, CheckCircle, AlertCircle, Upload, Loader2 } from "lucide-react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 import { useParams, useNavigate } from "react-router-dom";
 
 import ConfirmModal from "../../components/ConfirmModal";
@@ -38,7 +38,7 @@ const EditActivity = () => {
   // ---------------------------------------
   const fetchActivity = async () => {
     try {
-      const res = await axios.get(`/activities/${id}`);
+      const res = await axiosInstance.get(`/activities/${id}`);
       setActivity(res.data);
     } catch (err) {
       showToast("Unable to load activity.", "error");
@@ -64,7 +64,7 @@ const EditActivity = () => {
   // ---------------------------------------
   const deletePhotoConfirmed = async () => {
     try {
-      await axios.delete(`/activities/${id}/photo`, {
+      await axiosInstance.delete(`/activities/${id}/photo`, {
         data: { publicId: photoToDelete }
       });
 
@@ -97,7 +97,7 @@ const EditActivity = () => {
 
       newFiles.forEach((f) => fd.append("images", f));
 
-      await axios.put(`/activities/${id}`, fd, {
+      await axiosInstance.put(`/activities/${id}`, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -286,3 +286,4 @@ const EditActivity = () => {
 };
 
 export default EditActivity;
+

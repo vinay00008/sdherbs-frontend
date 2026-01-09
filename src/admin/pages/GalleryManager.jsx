@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 import { motion, AnimatePresence } from "framer-motion";
 import { Image, Plus, Trash2, X, Upload, CheckCircle, AlertCircle, Loader2, Copy, Search } from "lucide-react";
 
@@ -33,7 +33,7 @@ const GalleryManager = () => {
 
   const fetchGallery = async () => {
     try {
-      const res = await axios.get("/gallery");
+      const res = await axiosInstance.get("/gallery");
       setGallery(res.data);
     } catch (err) {
       console.error("Error fetching gallery:", err);
@@ -65,7 +65,7 @@ const GalleryManager = () => {
     data.append("category", formData.category);
 
     try {
-      await axios.post("/gallery", data);
+      await axiosInstance.post("/gallery", data);
       fetchGallery();
       closeModal();
       showToast("Image uploaded successfully!", "success");
@@ -84,7 +84,7 @@ const GalleryManager = () => {
   const confirmDelete = async () => {
     if (!deleteModal.id) return;
     try {
-      await axios.delete(`/gallery/${deleteModal.id}`);
+      await axiosInstance.delete(`/gallery/${deleteModal.id}`);
       setGallery(gallery.filter((img) => img._id !== deleteModal.id));
       showToast("Image deleted successfully!", "success");
       setDeleteModal({ show: false, id: null });
@@ -354,3 +354,4 @@ const GalleryManager = () => {
 };
 
 export default GalleryManager;
+

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar, Newspaper, Image, FileText } from "lucide-react";
-import axios from "../../api/axiosConfig";
+import axiosInstance from "../../api/axiosConfig";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({ events: 0, news: 0, gallery: 0, products: 0, enquiries: 0 });
@@ -11,7 +11,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get("/admin/stats");
+        const res = await axiosInstance.get("/admin/stats");
         if (res.data) setStats(res.data);
       } catch (err) {
         console.error("Dashboard stats error:", err);
@@ -53,3 +53,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

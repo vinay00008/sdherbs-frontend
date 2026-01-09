@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:10000/api", // Use ENV var in production
+  baseURL: (process.env.REACT_APP_API_URL || "http://localhost:10000/api").replace(/\/$/, ''), // Use ENV var in production
   withCredentials: true, // include cookies
   headers: {
     // "Content-Type": "application/json", // Let browser set this for FormData
